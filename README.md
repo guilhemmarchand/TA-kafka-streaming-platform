@@ -8,14 +8,11 @@ This Splunk application is compatible with the full Kafka stack (including Confl
 - Apache Kafka brokers
 - Apache Kafka connect
 - Confluent schema-registry
-- Kafka rest
-- ksql-server
+- Confluent Kafka rest
+- Confluent ksql-server
 
 ## Installation
 
-This Splunk application must be deployed on:
+Consult the on-line documentation at:
 
-- Heavy Forwarder is used as intermediate forwarder before the indexing layer (index time parsing)
-- Indexers
-- Search Heads
-
+* https://ta-kafka-streaming-platform.readthedocs.io
