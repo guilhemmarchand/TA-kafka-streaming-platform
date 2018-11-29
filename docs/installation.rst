@@ -94,6 +94,90 @@ If the inputs is activated but match files that do not exist, Splunk will simply
 
 Otherwise, you can as well create a full copy of the Technology Addon on a per category basis (one for Zookeeper, one for Kafla brokers, etc.) and push this package to the relevant servers.
 
+Confluent Enterprise / OSS
+==========================
+
+Zookeeper
+---------
+
+By default, Confluent may use the same logging location for both Zookeeper and Kafka brokers, suggested configuration to avoid this:
+
+**Configuring the systemd for Zookeeper:**
+
+- Edit: */lib/systemd/system/confluent-zookeeper.service*
+
+- Configure the logs location with the LOG_DIR environment variable
+
+::
+
+    [Unit]
+    Description=Apache Kafka - ZooKeeper
+    Documentation=http://docs.confluent.io/
+    After=network.target
+
+    [Service]
+    Type=simple
+    User=cp-kafka
+    Group=confluent
+    ExecStart=/usr/bin/zookeeper-server-start /etc/kafka/zookeeper.properties
+    Environment="LOG_DIR=/var/log/zookeeper"
+    TimeoutStopSec=180
+    Restart=no
+
+    [Install]
+    WantedBy=multi-user.target
+
+- Create the log directory:
+
+::
+
+    sudo mkdir /var/log/zookeeper
+    sudo chown cp-kafka:confluent /var/log/zookeeper
+
+- Restart Zookeeper and verify that logs are properly generated in the directory.
+
+Kafka Connect
+-------------
+
+By default, Confluent may use the same logging location for both Kafka brokers and Kafka Connect, suggested configuration to avoid this:
+
+**Configuring the systemd for Connect:**
+
+- Edit: */lib/systemd/system/confluent-kafka-connect.service*
+
+- Configure the logs location with the LOG_DIR environment variable
+
+::
+
+    [Unit]
+    Description=Apache Kafka Connect - distributed
+    Documentation=http://docs.confluent.io/
+    After=network.target confluent-kafka.target
+
+    [Service]
+    Type=simple
+    User=cp-kafka-connect
+    Group=confluent
+    ExecStart=/usr/bin/connect-distributed /etc/kafka/connect-distributed.properties
+    Environment="LOG_DIR=/var/log/connect"
+    TimeoutStopSec=180
+    Restart=no
+
+    [Install]
+    WantedBy=multi-user.target
+
+- Create the log directory:
+
+::
+
+    sudo mkdir /var/log/connect
+    sudo chown cp-kafka:confluent /var/log/connect
+
+Other components
+----------------
+
+Other components use their own logging location by default, which match the default inputs from the TA.
+
 Post-deployment verifications
 =============================
 
