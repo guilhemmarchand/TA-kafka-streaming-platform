@@ -143,11 +143,11 @@ By default, Confluent may use the same logging location for both Zookeeper and K
 Kafka Connect
 -------------
 
-**Unlike other components, Kafka Connect does not log to a file by default, it only logs to the console.**
+**Kafka Connect does not log to a file by default, it only logs to the console.**
 
 To change this behaviour, you need to edit the log4j configuration:
 
-**Configuring the systemd for Connect:**
+**Configuring the systemd service file for Connect:**
 
 - Edit: */lib/systemd/system/confluent-kafka-connect.service*
 
@@ -207,7 +207,83 @@ To change this behaviour, you need to edit the log4j configuration:
 
 ::
 
-    sudo systemctl status confluent-kafka-connect
+    sudo systemctl restart confluent-kafka-connect
+
+ksql-server
+-----------
+
+**ksql-server does not log to a file by default, it only logs to the console.**
+
+Notes: By default, the systemd already defines the log directory location, which should already be existing with the correct permissions.
+
+**Verifying the systemd service file for ksql:**
+
+- Edit: */lib/systemd/system/confluent-ksql.service*
+
+- Verify the logs location with the LOG_DIR environment variable
+
+::
+
+    [Unit]
+    Description=Streaming SQL engine for Apache Kafka
+    Documentation=http://docs.confluent.io/
+    After=network.target confluent-kafka.target confluent-schema-registry.target
+
+    [Service]
+    Type=simple
+    User=cp-ksql
+    Group=confluent
+    Environment="LOG_DIR=/var/log/confluent/ksql"
+    ExecStart=/usr/bin/ksql-server-start /etc/ksql/ksql-server.properties
+    TimeoutStopSec=180
+    Restart=no
+
+    [Install]
+    WantedBy=multi-user.target
+
+- Verify and create the log directory if required:
+
+::
+
+    sudo mkdir -p /var/log/confluent/ksql
+    sudo chown cp-kafka-connect:confluent /var/log/confluent/ksql
+
+**Configuring log4j:**
+
+- Edit: */etc/ksql/log4j.properties*
+
+- Add a file appender:
+
+::
+
+    log4j.rootLogger=INFO, stdout, FILE
+
+    log4j.appender.FILE=org.apache.log4j.DailyRollingFileAppender
+    log4j.appender.FILE.DatePattern='.'yyyy-MM-dd-HH
+    log4j.appender.FILE.File=${ksql.log.dir}/ksql-server.log
+    log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.FILE.layout.ConversionPattern=[%d] %p %m (%c)%n
+
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c:%L)%n
+
+    log4j.appender.streams=org.apache.log4j.ConsoleAppender
+    log4j.appender.streams.layout=org.apache.log4j.PatternLayout
+    log4j.appender.streams.layout.ConversionPattern=[%d] %p %m (%c:%L)%n
+
+    log4j.logger.kafka=ERROR, stdout
+    log4j.logger.org.apache.kafka.streams=INFO, streams
+    log4j.additivity.org.apache.kafka.streams=false
+    log4j.logger.org.apache.zookeeper=ERROR, stdout
+    log4j.logger.org.apache.kafka=ERROR, stdout
+    log4j.logger.org.I0Itec.zkclient=ERROR, stdout
+
+- Restart ksql-server and verify that the log file is being created:
+
+::
+
+    sudo systemctl restart confluent-ksql
 
 Other components
 ----------------
