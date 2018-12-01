@@ -20,7 +20,7 @@ This uses the following log4j configuration:
     DatePattern='.'yyyy-MM-dd-HH
     layout.ConversionPattern=[%d] %p %m (%c)%n
 
-If you are relying on a different log format, copy the default/props.conf to local/ and achieve the relevant customization.
+If you are relying on a different log format, copy the default/props.conf to local/ and achieve the relevant customizations.
 
 The JVM garbage collector has its own format that is unlikely to be customized in most installation.
 
@@ -36,7 +36,7 @@ Index creation
 
 This is optional and you can decide to create and use a different index name.
 
-The addon will **NOT** create the default index for you. (Splunk good practice, indexes shall be configured by administrators)
+The addon will **NOT** create the default index for you. (Splunk good practice, indexes must be configured by administrators)
 
 Installation
 ------------
@@ -139,6 +139,15 @@ By default, Confluent may use the same logging location for both Zookeeper and K
 ::
 
     sudo systemctl status confluent-zookeeper
+
+Kafka brokers
+-------------
+
+**By default, the Confluent platform generates brokers logs in the following location:**
+
+::
+
+    /var/log/kafka
 
 Kafka Connect
 -------------
@@ -285,10 +294,14 @@ Notes: By default, the systemd already defines the log directory location, which
 
     sudo systemctl restart confluent-ksql
 
-Other components
-----------------
+kafka-rest
+----------
 
-Other components use their own logging location by default, which match the default inputs from the TA.
+**By default, the Confluent platform generates kafka-rest logs in the following location:**
+
+::
+
+    /var/log/confluent/kafka-rest
 
 Post-deployment verifications
 =============================
