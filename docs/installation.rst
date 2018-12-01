@@ -134,12 +134,18 @@ By default, Confluent may use the same logging location for both Zookeeper and K
     sudo mkdir /var/log/zookeeper
     sudo chown cp-kafka:confluent /var/log/zookeeper
 
-- Restart Zookeeper and verify that logs are properly generated in the directory.
+- Restart Zookeeper and verify that logs are properly generated in the directory:
+
+::
+
+    sudo systemctl status confluent-zookeeper
 
 Kafka Connect
 -------------
 
-By default, Confluent may use the same logging location for both Kafka brokers and Kafka Connect, suggested configuration to avoid this:
+**Unlike other components, Kafka Connect does not log to a file by default, it only logs to the console.**
+
+To change this behaviour, you need to edit the log4j configuration:
 
 **Configuring the systemd for Connect:**
 
@@ -171,7 +177,37 @@ By default, Confluent may use the same logging location for both Kafka brokers a
 ::
 
     sudo mkdir /var/log/connect
-    sudo chown cp-kafka:confluent /var/log/connect
+    sudo chown cp-kafka-connect:confluent /var/log/connect
+
+**Configuring log4j:**
+
+- Edit: */etc/kafka/connect-log4j.properties*
+
+- Add a file appender:
+
+::
+
+    log4j.rootLogger=INFO, stdout, FILE
+
+    log4j.appender.FILE=org.apache.log4j.DailyRollingFileAppender
+    log4j.appender.FILE.DatePattern='.'yyyy-MM-dd-HH
+    log4j.appender.FILE.File=${kafka.logs.dir}/connect.log
+    log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.FILE.layout.ConversionPattern=[%d] %p %m (%c)%n
+
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c:%L)%n
+
+    log4j.logger.org.apache.zookeeper=ERROR
+    log4j.logger.org.I0Itec.zkclient=ERROR
+    log4j.logger.org.reflections=ERROR
+
+- Restart Connect and verify that the log file is being created:
+
+::
+
+    sudo systemctl status confluent-kafka-connect
 
 Other components
 ----------------
