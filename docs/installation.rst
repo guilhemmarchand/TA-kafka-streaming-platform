@@ -104,7 +104,7 @@ By default, Confluent may use the same logging location for both Zookeeper and K
 
 **Configuring the systemd for Zookeeper:**
 
-- Edit: */lib/systemd/system/confluent-zookeeper.service*
+- Edit: ``/lib/systemd/system/confluent-zookeeper.service``
 
 - Configure the logs location with the LOG_DIR environment variable
 
@@ -158,7 +158,7 @@ To change this behaviour, you need to edit the log4j configuration:
 
 **Configuring the systemd service file for Connect:**
 
-- Edit: */lib/systemd/system/confluent-kafka-connect.service*
+- Edit: ``/lib/systemd/system/confluent-kafka-connect.service``
 
 - Configure the logs location with the LOG_DIR environment variable
 
@@ -218,6 +218,15 @@ To change this behaviour, you need to edit the log4j configuration:
 
     sudo systemctl restart confluent-kafka-connect
 
+Schema registry
+---------------
+
+**By default, the Confluent platform generates Schema registry log in the following location:**
+
+::
+
+    /var/log/confluent/schema-registry
+
 ksql-server
 -----------
 
@@ -227,7 +236,7 @@ Notes: By default, the systemd already defines the log directory location, which
 
 **Verifying the systemd service file for ksql:**
 
-- Edit: */lib/systemd/system/confluent-ksql.service*
+- Edit: ``/lib/systemd/system/confluent-ksql.service``
 
 - Verify the logs location with the LOG_DIR environment variable
 
