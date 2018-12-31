@@ -1,6 +1,10 @@
 Release notes
 #############
 
+Version 1.0.3
+=============
+- Remove useless inputs for Zookeeper inherited from shared log4j configuration with Kafka
+
 Version 1.0.2
 =============
 - feature: EVENT_BREAKER props improvements
