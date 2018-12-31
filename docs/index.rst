@@ -22,6 +22,10 @@ Welcome to the Splunk Technology addon for Kafka streaming platform documentatio
 * https://da-itsi-telegraf-kafka.readthedocs.io
 * https://telegraf-kafka.readthedocs.io
 
+**It is recommended to read the unified guide for Kafka and Confluent monitoring first:**
+
+https://splunk-guide-for-kafka-monitoring.readthedocs.io
+
 Overview:
 =========
 
