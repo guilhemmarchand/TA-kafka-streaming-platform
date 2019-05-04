@@ -1,6 +1,10 @@
 Release notes
 #############
 
+Version 1.0.4
+=============
+- Rename inputs.conf to inputs.conf.sample to allow Splunk Cloud vetting
+
 Version 1.0.3
 =============
 - Remove useless inputs for Zookeeper inherited from shared log4j configuration with Kafka
